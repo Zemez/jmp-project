@@ -1,5 +1,6 @@
 package com.javamentor.jmp_project.servlet;
 
+import com.javamentor.jmp_project.util.TemporaryMessage;
 import com.javamentor.jmp_project.exception.DaoException;
 import com.javamentor.jmp_project.exception.DbException;
 import com.javamentor.jmp_project.model.User;
@@ -18,10 +19,11 @@ import java.util.List;
 @WebServlet(name="UserServlet", urlPatterns={"/user","/users"})
 public class UserServlet extends HttpServlet {
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=utf-8");
 
-        Long id = request.getParameter("id") == null ? 0 : Long.parseLong(request.getParameter("id"));
+        Long id = StringUtils.isNumeric(request.getParameter("id")) ? Long.parseLong(request.getParameter("id")) : 0;
         String login = request.getParameter("login");
 
         HttpSession session = request.getSession();
@@ -38,22 +40,69 @@ public class UserServlet extends HttpServlet {
 
                 session.setAttribute("users", users);
                 response.setStatus(HttpServletResponse.SC_OK);
-                getServletContext().getRequestDispatcher("/users.jsp").forward(request, response);
+                getServletContext().getRequestDispatcher("/jsp/users.jsp").forward(request, response);
                 return;
             }
         } catch (DaoException | DbException e) {
             e.printStackTrace();
         }
 
-        if (user == null) user = new User();
+        if (user == null) {
+            request.setAttribute("alert", new TemporaryMessage("Alert: user not found."));
+            user = new User();
+        }
 
         session.setAttribute("user", user);
         response.setStatus(HttpServletResponse.SC_OK);
-        getServletContext().getRequestDispatcher("/user.jsp").forward(request, response);
+        getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html;charset=utf-8");
+
+        String login = request.getParameter("login");
+        String password = request.getParameter("password");
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+
+        if (StringUtils.isBlank(login) || StringUtils.isBlank(password)) {
+            request.getSession().setAttribute("alert", new TemporaryMessage("Alert: invalid user data."));
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.sendRedirect("/");
+            return;
+        }
+
+        User user;
+
+        try {
+            user = new UserService().addUser(login, password, name, email);
+            request.setAttribute("message", new TemporaryMessage("Note: user successful added."));
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (DbException | DaoException e) {
+            user = new User(login, password, name, email);
+            request.setAttribute("alert", new TemporaryMessage("Alert: user not added."));
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
+
+        request.getSession().setAttribute("user", user);
+        getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("alert", new TemporaryMessage("Alert: user not updated."));
+        request.getSession().setAttribute("user", new User());
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("alert", new TemporaryMessage("Alert: user not deleted."));
+        request.getSession().setAttribute("user", new User());
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
     }
 
 }

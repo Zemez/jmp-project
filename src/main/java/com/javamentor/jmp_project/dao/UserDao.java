@@ -79,16 +79,16 @@ public class UserDao {
         return users;
     }
 
-    public void addUser(User user) throws DaoException {
-        if (getUserBy("login", user.getLogin()) != null) throw new DaoException("User already exists");
+    public User addUser(String login, String password, String name, String email) throws DaoException {
+        if (getUserBy("login", login) != null) throw new DaoException("User already exists");
 
         String sql = "insert into users (login, password, name, email) values (?,?,?,?)";
 
-        try(PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, user.getLogin());
-            statement.setString(2, user.getPassword());
-            statement.setString(3, user.getName());
-            statement.setString(4, user.getEmail());
+        try(PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setString(1, login);
+            statement.setString(2, password);
+            statement.setString(3, name);
+            statement.setString(4, email);
             LOG.info(statement.toString());
 
             int result = statement.executeUpdate();
@@ -96,7 +96,7 @@ public class UserDao {
 
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 if (generatedKeys.first()) {
-                    user.setId(generatedKeys.getLong(1));
+                    return getUser(generatedKeys.getLong(1));
                 } else {
                     throw new DaoException("Adding user failed, no Id obtained.");
                 }

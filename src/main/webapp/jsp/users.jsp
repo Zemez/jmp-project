@@ -1,20 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page contentType="text/html" pageEncoding="UTF-8" %>
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>User Java Bean Page</title>
-  <style>
-    table, th, td {
-      color: #2b2b2b;
-      border: 1px solid #2b2b2b;
-      border-collapse: collapse;
-      padding: 5px;
-    }
-  </style>
-</head>
-<body>
+<jsp:include page="header.jsp" />
+
+<h2>CRUD: users</h2>
 <div>
   <table>
     <thead>
@@ -25,8 +12,8 @@
       <c:forEach var="user" items="${users}">
         <tr>
           <jsp:useBean id="user" scope="page" type="com.javamentor.jmp_project.model.User"/>
-          <td><c:out value="${user.id}" /></td>
-          <td><c:out value="${user.login}" /></td>
+          <td><a href=<c:url value="/user?id=${user.id}" />><c:out value="${user.id}" /></a></td>
+          <td><a href=<c:url value="/user?login=${user.login}" />><c:out value="${user.login}" /></a></td>
           <td><c:out value="${user.password}" /></td>
           <td><c:out value="${user.name}" /></td>
           <td><c:out value="${user.email}" /></td>
@@ -35,5 +22,5 @@
     </tbody>
   </table>
 </div>
-</body>
-</html>
+
+<jsp:include page="footer.jsp" />

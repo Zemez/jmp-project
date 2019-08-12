@@ -43,4 +43,8 @@ public class UserService implements AutoCloseable {
             e.printStackTrace();
         }
     }
+
+    public User addUser(String login, String password, String name, String email) throws DbException, DaoException {
+        return getUserDao().addUser(login, password, name, email);
+    }
 }

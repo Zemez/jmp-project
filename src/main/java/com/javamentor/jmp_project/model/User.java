@@ -3,7 +3,7 @@ package com.javamentor.jmp_project.model;
 import java.io.Serializable;
 
 public class User implements Serializable {
-    private long id;
+    private Long id;
     private String login;
     private String password;
     private String name;
@@ -19,7 +19,7 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public User(long id, String login, String password, String name, String email) {
+    public User(Long id, String login, String password, String name, String email) {
         this.id = id;
         this.login = login;
         this.password = password;
@@ -27,11 +27,11 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

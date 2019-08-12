@@ -1,9 +1,5 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
-<%
-  String exception = pageContext.getException().getClass().toString();
-  String message = pageContext.getException().getMessage();
-  StackTraceElement[] stack = pageContext.getException().getStackTrace();
-%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,12 +8,13 @@
 </head>
 <body>
 <h2>Exception occurred while processing the request</h2>
-<p>Type: <%= exception%>
-</p>
-<p>Message: <%= message %>
-</p>
-<p>Stack Trace:
-<ul><% for (StackTraceElement ste : stack) out.println("<li>" + ste.toString() + "</li>"); %></ul>
-</p>
+<p>Type: <c:out value="${pageContext.getException().getClass().toString()}" /></p>
+<p>Message: <c:out value="${pageContext.getException().getMessage()}" /></p>
+<p>Stack Trace:</p>
+<ul>
+  <c:forEach var="ste" items="${pageContext.getException().getStackTrace()}">
+    <li><c:out value="${ste}" /></li>
+  </c:forEach>
+</ul>
 </body>
 </html>

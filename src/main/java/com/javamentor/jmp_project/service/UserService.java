@@ -39,6 +39,9 @@ public class UserService implements AutoCloseable {
         return getUserDao().addUser(login, password, name, email);
     }
 
+    public User updateUser(Long id, String login, String password, String name, String email) throws DbException, DaoException {
+        return getUserDao().updateUser(id, login, password, name, email);
+    }
     public void deleteUser(Long id) throws DbException, DaoException {
         getUserDao().deleteUser(id);
     }

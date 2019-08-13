@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -126,9 +125,34 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("alert", new TemporaryMessage("Alert: user not updated."));
-        request.getSession().setAttribute("user", new User());
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.setContentType("text/html;charset=utf-8");
+
+        Long id = StringUtils.isNumeric(request.getParameter("id")) ? Long.parseLong(request.getParameter("id")) : 0L;
+        String login = request.getParameter("login");
+        String password = request.getParameter("password");
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+
+        if (StringUtils.isBlank(login) || StringUtils.isBlank(password)) {
+            request.getSession().setAttribute("alert", new TemporaryMessage("Alert: invalid user data."));
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.sendRedirect("/");
+            return;
+        }
+
+        User user;
+
+        try (UserService userService = new UserService()) {
+            user = userService.updateUser(id, login, password, name, email);
+            request.setAttribute("message", new TemporaryMessage("Note: user successful updated."));
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (DbException | DaoException e) {
+            user = new User(id, login, password, name, email);
+            request.setAttribute("alert", new TemporaryMessage("Alert: user not updated."));
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
+
+        request.getSession().setAttribute("user", user);
         getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
     }
 

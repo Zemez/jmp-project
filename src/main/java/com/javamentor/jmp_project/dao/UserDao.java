@@ -80,11 +80,11 @@ public class UserDao {
     }
 
     public User addUser(String login, String password, String name, String email) throws DaoException {
-        if (getUserBy("login", login) != null) throw new DaoException("User already exists");
+        if (getUserBy("login", login) != null) throw new DaoException("User already exists.");
 
         String sql = "insert into users (login, password, name, email) values (?,?,?,?)";
 
-        try(PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, login);
             statement.setString(2, password);
             statement.setString(3, name);
@@ -108,6 +108,48 @@ public class UserDao {
             LOG.warning("User add statement exception: " + e.getMessage());
             throw new DaoException("User add failed.", e);
         }
+    }
+
+    public User updateUser(Long id, String login, String password, String name, String email) throws DaoException {
+        User user = getUser(id);
+        if (user == null) throw new DaoException("User not found.");
+        if (!user.getLogin().equals(login)) throw new DaoException("Couldn't change login.");
+
+        StringBuilder sql = new StringBuilder("update users set");
+        List<Object> list = new ArrayList<>();
+
+        if (!user.getPassword().equals(password)) {
+            sql.append(" password=?");
+            list.add(password);
+        }
+        if (!user.getName().equals(name)) {
+            sql.append(" name=?");
+            list.add(name);
+        }
+        if (!user.getEmail().equals(email)) {
+            sql.append(" email=?");
+            list.add(email);
+        }
+
+        if (list.size() < 1) throw new DaoException("Nothing to update.");
+
+        sql.append(" where id=?");
+        list.add(id);
+
+        try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < list.size(); i++) {
+                statement.setObject(i + 1, list.get(i));
+            }
+            LOG.info(statement.toString());
+
+            int rows = statement.executeUpdate();
+            if (rows != 1) throw new DaoException("User update failed.");
+            user = getUser(id);
+        } catch (SQLException e) {
+            LOG.warning("User update statement exception: " + e.getMessage());
+            throw new DaoException("User update failed.", e);
+        }
+        return user;
     }
 
     public void deleteUser(Long id) throws DaoException {

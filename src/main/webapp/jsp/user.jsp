@@ -5,7 +5,7 @@
 
 <form action="<c:url value="/user"/>" method="post">
   <input type="hidden" name="_method" value="put">
-  <jsp:useBean id="user" scope="session" type="com.javamentor.jmp_project.model.User"/>
+  <jsp:useBean id="user" scope="request" type="com.javamentor.jmp_project.model.User"/>
   <p><label>Id: <input type="text" name="id" value="<c:out value="${user.id}" />" readonly="readonly"></label></p>
   <p><label>Login: <input type="text" name="login" value="<c:out value="${user.login}"/>" readonly="readonly"></label>
   </p>

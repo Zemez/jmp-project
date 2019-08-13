@@ -8,10 +8,10 @@
       <tr><th>Id</th><th>Login</th><th>Password</th><th>Name</th><th>Email</th></tr>
     </thead>
     <tbody>
-      <jsp:useBean id="users" scope="session" type="java.util.List<com.javamentor.jmp_project.model.User>"/>
+    <jsp:useBean id="users" scope="request" type="java.util.List<com.javamentor.jmp_project.model.User>"/>
       <c:forEach var="user" items="${users}">
         <tr>
-          <jsp:useBean id="user" scope="page" type="com.javamentor.jmp_project.model.User"/>
+          <jsp:useBean id="user" type="com.javamentor.jmp_project.model.User"/>
           <td><a href=<c:url value="/user?id=${user.id}" />><c:out value="${user.id}" /></a></td>
           <td><a href=<c:url value="/user?login=${user.login}" />><c:out value="${user.login}" /></a></td>
           <td><c:out value="${user.password}" /></td>

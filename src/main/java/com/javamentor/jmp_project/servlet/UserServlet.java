@@ -12,7 +12,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -28,6 +27,7 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html;charset=utf-8");
         String method = req.getMethod();
         LOG.info("method: " + method);
 
@@ -39,12 +39,15 @@ public class UserServlet extends HttpServlet {
             LOG.info("_method: " + _method);
             if (StringUtils.isNotBlank(_method)) {
                 _method = _method.toUpperCase();
-                if (_method.equals(METHOD_DELETE)) {
-                    doDelete(req, resp);
-                } else if (_method.equals(METHOD_PUT)) {
-                    doPut(req, resp);
-                } else {
-                    doPost(req, resp);
+                switch (_method) {
+                    case METHOD_DELETE:
+                        doDelete(req, resp);
+                        break;
+                    case METHOD_PUT:
+                        doPut(req, resp);
+                        break;
+                    default:
+                        doPost(req, resp);
                 }
             } else {
                 doPost(req, resp);
@@ -56,12 +59,9 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html;charset=utf-8");
-
         Long id = StringUtils.isNumeric(request.getParameter("id")) ? Long.parseLong(request.getParameter("id")) : 0L;
         String login = request.getParameter("login");
 
-        HttpSession session = request.getSession();
         User user = null;
 
         try (UserService userService = new UserService()) {
@@ -72,7 +72,7 @@ public class UserServlet extends HttpServlet {
             } else {
                 List<User> users = userService.getAllUsers();
 
-                session.setAttribute("users", users);
+                request.setAttribute("users", users);
                 response.setStatus(HttpServletResponse.SC_OK);
                 getServletContext().getRequestDispatcher("/jsp/users.jsp").forward(request, response);
                 return;
@@ -82,19 +82,19 @@ public class UserServlet extends HttpServlet {
         }
 
         if (user == null) {
-            request.setAttribute("alert", new TemporaryMessage("Alert: user not found."));
-            user = new User();
+            request.getSession().setAttribute("alert", new TemporaryMessage("Alert: user not found."));
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.sendRedirect("/");
+            return;
         }
 
-        session.setAttribute("user", user);
         response.setStatus(HttpServletResponse.SC_OK);
+        request.setAttribute("user", user);
         getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html;charset=utf-8");
-
         String login = request.getParameter("login");
         String password = request.getParameter("password");
         String name = request.getParameter("name");
@@ -119,14 +119,12 @@ public class UserServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
 
-        request.getSession().setAttribute("user", user);
+        request.setAttribute("user", user);
         getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
     }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html;charset=utf-8");
-
         Long id = StringUtils.isNumeric(request.getParameter("id")) ? Long.parseLong(request.getParameter("id")) : 0L;
         String login = request.getParameter("login");
         String password = request.getParameter("password");
@@ -152,14 +150,12 @@ public class UserServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
 
-        request.getSession().setAttribute("user", user);
+        request.setAttribute("user", user);
         getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
     }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html;charset=utf-8");
-
         Long id = StringUtils.isNumeric(request.getParameter("id")) ? Long.parseLong(request.getParameter("id")) : 0L;
         String login = request.getParameter("login");
 

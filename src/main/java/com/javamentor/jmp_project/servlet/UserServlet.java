@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -29,6 +30,11 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String method = req.getMethod();
+        LOG.info("method: " + method);
+
+//        Enumeration<String> el = req.getParameterNames();
+//        while (el.hasMoreElements()) LOG.info(el.nextElement());
+
         if (method.equals(METHOD_POST)) {
             String _method = req.getParameter("_method");
             LOG.info("_method: " + _method);
@@ -53,14 +59,13 @@ public class UserServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=utf-8");
 
-        Long id = StringUtils.isNumeric(request.getParameter("id")) ? Long.parseLong(request.getParameter("id")) : 0;
+        Long id = StringUtils.isNumeric(request.getParameter("id")) ? Long.parseLong(request.getParameter("id")) : 0L;
         String login = request.getParameter("login");
 
         HttpSession session = request.getSession();
-        UserService userService = new UserService();
         User user = null;
 
-        try {
+        try (UserService userService = new UserService()) {
             if (id > 0) {
                 user = userService.getUser(id);
             } else if (StringUtils.isNotBlank(login)) {
@@ -105,8 +110,8 @@ public class UserServlet extends HttpServlet {
 
         User user;
 
-        try {
-            user = new UserService().addUser(login, password, name, email);
+        try (UserService userService = new UserService()) {
+            user = userService.addUser(login, password, name, email);
             request.setAttribute("message", new TemporaryMessage("Note: user successful added."));
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (DbException | DaoException e) {
@@ -129,10 +134,37 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("alert", new TemporaryMessage("Alert: user not deleted."));
-        request.getSession().setAttribute("user", new User());
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
+        response.setContentType("text/html;charset=utf-8");
+
+        Long id = StringUtils.isNumeric(request.getParameter("id")) ? Long.parseLong(request.getParameter("id")) : 0L;
+        String login = request.getParameter("login");
+
+        if (id <= 0 && StringUtils.isBlank(login)) {
+            request.getSession().setAttribute("alert", new TemporaryMessage("Alert: invalid user data."));
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.sendRedirect("/");
+            return;
+        }
+
+        try (UserService userService = new UserService()) {
+            if (id <= 0) {
+                User user = userService.getUserBy("login", login);
+                id = user == null ? 0L : user.getId();
+            }
+
+            if (id > 0) {
+                userService.deleteUser(id);
+                request.getSession().setAttribute("message", new TemporaryMessage("Note: user successful deleted."));
+                response.setStatus(HttpServletResponse.SC_ACCEPTED);
+            } else {
+                request.getSession().setAttribute("alert", new TemporaryMessage("Alert: user not found."));
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+        } catch (DbException | DaoException e) {
+            request.getSession().setAttribute("alert", new TemporaryMessage("Alert: user not deleted."));
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
+        response.sendRedirect("/");
     }
 
 }

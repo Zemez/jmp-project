@@ -12,6 +12,7 @@ public class RootServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         getServletContext().getRequestDispatcher("/jsp/index.jsp").forward(request, response);
     }

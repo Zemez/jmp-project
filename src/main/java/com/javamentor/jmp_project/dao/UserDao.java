@@ -42,12 +42,12 @@ public class UserDao {
 
                 return new User(id, login, password, name, email);
             } catch (SQLException e) {
-                LOG.warning("Getting user result exception: " + e.getMessage());
-                throw new DaoException("Getting user failed.", e);
+                LOG.warning("User get result exception: " + e.getMessage());
+                throw new DaoException("User get failed.", e);
             }
         } catch (SQLException e) {
-            LOG.warning("Getting user statement exception: " + e.getMessage());
-            throw new DaoException("Getting user failed.", e);
+            LOG.warning("User get statement exception: " + e.getMessage());
+            throw new DaoException("User get failed.", e);
         }
     }
 
@@ -69,12 +69,12 @@ public class UserDao {
                     users.add(new User(id, login, password, name, email));
                 }
             } catch (SQLException e) {
-                LOG.warning("Getting users result exception: " + e.getMessage());
-                throw new DaoException("Getting users failed.", e);
+                LOG.warning("Users get result exception: " + e.getMessage());
+                throw new DaoException("Users get failed.", e);
             }
         } catch (SQLException e) {
-            LOG.warning("Getting users statement exception: " + e.getMessage());
-            throw new DaoException("Getting users failed.", e);
+            LOG.warning("Users get statement exception: " + e.getMessage());
+            throw new DaoException("Users get failed.", e);
         }
         return users;
     }
@@ -92,21 +92,36 @@ public class UserDao {
             LOG.info(statement.toString());
 
             int result = statement.executeUpdate();
-            if (result != 1) throw new DaoException("Adding user failed.");
+            if (result != 1) throw new DaoException("User add failed.");
 
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 if (generatedKeys.first()) {
                     return getUser(generatedKeys.getLong(1));
                 } else {
-                    throw new DaoException("Adding user failed, no Id obtained.");
+                    throw new DaoException("User add failed, no Id obtained.");
                 }
             } catch (SQLException e) {
-                LOG.warning("Adding user result exception: " + e.getMessage());
-                throw new DaoException("Adding user failed.");
+                LOG.warning("User add result exception: " + e.getMessage());
+                throw new DaoException("User add failed.");
             }
         } catch (SQLException e) {
-            LOG.warning("Adding statement exception: " + e.getMessage());
-            throw new DaoException("Adding user failed.", e);
+            LOG.warning("User add statement exception: " + e.getMessage());
+            throw new DaoException("User add failed.", e);
+        }
+    }
+
+    public void deleteUser(Long id) throws DaoException {
+        String sql = "delete from users where id=?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, id);
+            LOG.info(statement.toString());
+
+            int result = statement.executeUpdate();
+            if (result != 1) throw new DaoException("User delete failed.");
+        } catch (SQLException e) {
+            LOG.warning("User delete statement exception: " + e.getMessage());
+            throw new DaoException("User delete failed.", e);
         }
     }
 
@@ -120,17 +135,18 @@ public class UserDao {
                     "email varchar(255) null" +
                     ") comment 'User table'");
         } catch (SQLException e) {
-            LOG.warning("Creating table statement exception: " + e.getMessage());
-            throw new DaoException("Creating table failed.", e);
+            LOG.warning("Table create statement exception: " + e.getMessage());
+            throw new DaoException("Table create failed.", e);
         }
     }
 
+    @SuppressWarnings("unused")
     public void dropTable() throws DaoException {
         try (Statement statement = connection.createStatement()) {
             statement.execute("drop table if exists users");
         } catch (SQLException e) {
-            LOG.warning("Dropping table statement exception: " + e.getMessage());
-            throw new DaoException("Dropping table failed.", e);
+            LOG.warning("Table drop statement exception: " + e.getMessage());
+            throw new DaoException("Table drop failed.", e);
         }
     }
 

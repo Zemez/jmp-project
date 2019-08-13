@@ -1,10 +1,10 @@
 package com.javamentor.jmp_project.servlet;
 
-import com.javamentor.jmp_project.util.TemporaryMessage;
 import com.javamentor.jmp_project.exception.DaoException;
 import com.javamentor.jmp_project.exception.DbException;
 import com.javamentor.jmp_project.model.User;
 import com.javamentor.jmp_project.service.UserService;
+import com.javamentor.jmp_project.util.TemporaryMessage;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletException;
@@ -15,9 +15,39 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 @WebServlet(name="UserServlet", urlPatterns={"/user","/users"})
 public class UserServlet extends HttpServlet {
+
+    private static final Logger LOG = Logger.getLogger(UserServlet.class.getName());
+
+    private static final String METHOD_DELETE = "DELETE";
+    private static final String METHOD_POST = "POST";
+    private static final String METHOD_PUT = "PUT";
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String method = req.getMethod();
+        if (method.equals(METHOD_POST)) {
+            String _method = req.getParameter("_method");
+            LOG.info("_method: " + _method);
+            if (StringUtils.isNotBlank(_method)) {
+                _method = _method.toUpperCase();
+                if (_method.equals(METHOD_DELETE)) {
+                    doDelete(req, resp);
+                } else if (_method.equals(METHOD_PUT)) {
+                    doPut(req, resp);
+                } else {
+                    doPost(req, resp);
+                }
+            } else {
+                doPost(req, resp);
+            }
+        } else {
+            super.service(req, resp);
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -2,7 +2,7 @@ package com.javamentor.jmp_project.servlet.user;
 
 import com.javamentor.jmp_project.exception.DaoException;
 import com.javamentor.jmp_project.model.User;
-import com.javamentor.jmp_project.service.UserService;
+import com.javamentor.jmp_project.service.UserServiceImpl;
 import com.javamentor.jmp_project.util.AlertMessage;
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,7 +38,7 @@ public class CreateServlet extends HttpServlet {
             return;
         }
 
-        try (UserService userService = new UserService()) {
+        try (UserServiceImpl userService = new UserServiceImpl()) {
             user = userService.createUser(user);
             request.setAttribute("user", user);
             request.setAttribute("note", new AlertMessage("Note: user successful added."));

@@ -1,6 +1,6 @@
 package com.javamentor.jmp_project.config;
 
-import com.javamentor.jmp_project.dao.UserDao;
+import com.javamentor.jmp_project.dao.UserDaoImpl;
 import com.javamentor.jmp_project.exception.DbException;
 
 import java.sql.*;
@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 public class MySqlConfig implements AutoCloseable {
 
-    private static final Logger LOG = Logger.getLogger(UserDao.class.getName());
+    private static final Logger LOG = Logger.getLogger(UserDaoImpl.class.getName());
     private Connection connection;
 
     public MySqlConfig() throws DbException {
@@ -18,7 +18,7 @@ public class MySqlConfig implements AutoCloseable {
             DatabaseMetaData metadata = connection.getMetaData();
             ResultSet resultSet = metadata.getTables(null, null, "users", null);
             if (!resultSet.first()) {
-                new UserDao(connection).createTable();
+                new UserDaoImpl(connection).createTable();
             }
         } catch (SQLException e) {
             throw new DbException("Something going wrong.");

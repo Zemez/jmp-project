@@ -2,7 +2,7 @@ package com.javamentor.jmp_project.servlet.user;
 
 import com.javamentor.jmp_project.exception.DaoException;
 import com.javamentor.jmp_project.model.User;
-import com.javamentor.jmp_project.service.UserService;
+import com.javamentor.jmp_project.service.UserServiceImpl;
 import com.javamentor.jmp_project.util.AlertMessage;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,7 +23,7 @@ public class DeleteServlet extends HttpServlet {
         Long id = StringUtils.isNumeric(request.getParameter("id")) ? Long.parseLong(request.getParameter("id")) : null;
         String login = request.getParameter("login");
 
-        try (UserService userService = new UserService()) {
+        try (UserServiceImpl userService = new UserServiceImpl()) {
             if (id == null || id < 1) {
                 if (StringUtils.isNotBlank(login)) {
                     try {

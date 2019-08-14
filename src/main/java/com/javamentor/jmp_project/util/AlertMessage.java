@@ -1,11 +1,11 @@
 package com.javamentor.jmp_project.util;
 
-public class TemporaryMessage {
+public class AlertMessage {
 
     private String message;
     private boolean show = true;
 
-    public TemporaryMessage(String message) {
+    public AlertMessage(String message) {
         this.message = message;
     }
 

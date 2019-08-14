@@ -1,0 +1,20 @@
+table, th, td {
+    color: #2b2b2b;
+    border: 1px solid #2b2b2b;
+    border-collapse: collapse;
+    padding: 10px;
+}
+
+.error {
+    color: red;
+    background: lightpink;
+    border: 1px solid red;
+    padding: 10px;
+}
+
+.note {
+    color: green;
+    background: lightgreen;
+    border: 1px solid green;
+    padding: 10px;
+}

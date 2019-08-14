@@ -1,4 +1,4 @@
-package com.javamentor.jmp_project.service;
+package com.javamentor.jmp_project.config;
 
 import com.javamentor.jmp_project.dao.UserDao;
 import com.javamentor.jmp_project.exception.DbException;
@@ -6,12 +6,12 @@ import com.javamentor.jmp_project.exception.DbException;
 import java.sql.*;
 import java.util.logging.Logger;
 
-public class DbService implements AutoCloseable {
+public class MySqlConfig implements AutoCloseable {
 
     private static final Logger LOG = Logger.getLogger(UserDao.class.getName());
     private Connection connection;
 
-    DbService() throws DbException {
+    public MySqlConfig() throws DbException {
         connection = getMysqlConnection();
 
         try {
@@ -25,7 +25,7 @@ public class DbService implements AutoCloseable {
         }
     }
 
-    Connection getConnection() throws DbException {
+    public Connection getConnection() throws DbException {
         try {
             if (connection == null || connection.isClosed()) {
                 connection = getMysqlConnection();

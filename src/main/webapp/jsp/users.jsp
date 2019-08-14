@@ -1,7 +1,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:include page="header.jsp" />
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>User Java Bean Page</title>
+  <link rel="stylesheet" type="text/css" href="<c:url value="/css/style.css"/>"/>
+</head>
+<body>
+
+<c:import url="nav.jsp"/>
+<c:import url="alerts.jsp"/>
 
 <h2>CRUD: users</h2>
+
 <div>
   <table>
     <thead>
@@ -23,4 +34,5 @@
   </table>
 </div>
 
-<jsp:include page="footer.jsp" />
+</body>
+</html>

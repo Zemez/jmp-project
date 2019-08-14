@@ -3,6 +3,7 @@ package com.javamentor.jmp_project.model;
 import java.io.Serializable;
 
 public class User implements Serializable {
+
     private Long id;
     private String login;
     private String password;
@@ -13,10 +14,7 @@ public class User implements Serializable {
     }
 
     public User(String login, String password, String name, String email) {
-        this.login = login;
-        this.password = password;
-        this.name = name;
-        this.email = email;
+        this(null, login, password, name, email);
     }
 
     public User(Long id, String login, String password, String name, String email) {
@@ -31,7 +29,6 @@ public class User implements Serializable {
         return id;
     }
 
-    @SuppressWarnings("unused")
     public void setId(Long id) {
         this.id = id;
     }
@@ -40,7 +37,6 @@ public class User implements Serializable {
         return login;
     }
 
-    @SuppressWarnings("unused")
     public void setLogin(String login) {
         this.login = login;
     }
@@ -49,7 +45,6 @@ public class User implements Serializable {
         return password;
     }
 
-    @SuppressWarnings("unused")
     public void setPassword(String password) {
         this.password = password;
     }
@@ -58,7 +53,6 @@ public class User implements Serializable {
         return name;
     }
 
-    @SuppressWarnings("unused")
     public void setName(String name) {
         this.name = name;
     }
@@ -67,8 +61,19 @@ public class User implements Serializable {
         return email;
     }
 
-    @SuppressWarnings("unused")
     public void setEmail(String email) {
         this.email = email;
     }
+
+    @Override
+    public String toString() {
+        return "User {" +
+                " id=" + id +
+                ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                " }";
+    }
+
 }

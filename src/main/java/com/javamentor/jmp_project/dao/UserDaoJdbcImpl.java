@@ -1,6 +1,8 @@
 package com.javamentor.jmp_project.dao;
 
+import com.javamentor.jmp_project.config.JdbcConfig;
 import com.javamentor.jmp_project.exception.DaoException;
+import com.javamentor.jmp_project.exception.IllegalArgumentException;
 import com.javamentor.jmp_project.model.User;
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,25 +11,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class UserDaoImpl implements UserDao {
+public class UserDaoJdbcImpl implements UserDao {
 
-    private static final Logger LOG = Logger.getLogger(UserDaoImpl.class.getName());
+    private static final Logger LOG = Logger.getLogger(UserDaoJdbcImpl.class.getName());
     private Connection connection;
 
-    public UserDaoImpl(Connection connection) {
-        this.connection = connection;
+    public UserDaoJdbcImpl() {
+        connection = JdbcConfig.getConnection();
     }
 
     @Override
-    public User getUser(Long id) throws DaoException {
-        if (id == null || id < 1) throw new DaoException("Invalid id.");
+    public User getUser(Long id) throws DaoException, IllegalArgumentException {
+        if (id == null || id < 1) throw new IllegalArgumentException("Invalid id.");
 
         return getUserBy("id", id);
     }
 
     @Override
-    public User getUserByLogin(String login) throws DaoException {
-        if (StringUtils.isBlank(login)) throw new DaoException("Invalid login.");
+    public User getUserByLogin(String login) throws DaoException, IllegalArgumentException {
+        if (StringUtils.isBlank(login)) throw new IllegalArgumentException("Invalid login.");
 
         return getUserBy("login", login);
     }
@@ -90,7 +92,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User createUser(User user) throws DaoException {
+    public User createUser(User user) throws DaoException, IllegalArgumentException {
         if (getUserBy("login", user.getLogin()) != null) throw new DaoException("User already exists.");
 
         String sql = "insert into users (login, password, name, email) values (?,?,?,?)";
@@ -122,17 +124,17 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User updateUser(User user) throws DaoException {
-        if (user == null) throw new DaoException("Invalid null user.");
+    public User updateUser(User user) throws DaoException, IllegalArgumentException {
+        if (user == null) throw new IllegalArgumentException("Invalid user.");
 
         Long id = user.getId();
 
-        if (id == null || id < 1) throw new DaoException("Invalid id.");
+        if (id == null || id < 1) throw new IllegalArgumentException("Invalid id.");
 
         User userOld = getUser(id);
 
         if (userOld == null) throw new DaoException("User not found.");
-        if (!userOld.getLogin().equals(user.getLogin())) throw new DaoException("Couldn't change login.");
+        if (!userOld.getLogin().equals(user.getLogin())) throw new IllegalArgumentException("Couldn't change login.");
 
         StringBuilder sql = new StringBuilder("update users set");
         List<Object> list = new ArrayList<>();
@@ -173,8 +175,8 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void deleteUser(Long id) throws DaoException {
-        if (id == null || id < 1) throw new DaoException("Invalid id.");
+    public void deleteUser(Long id) throws DaoException, IllegalArgumentException {
+        if (id == null || id < 1) throw new IllegalArgumentException("Invalid id.");
 
         String sql = "delete from users where id=?";
 
@@ -191,28 +193,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void createTable() throws DaoException {
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("create table if not exists users (" +
-                    "id bigint auto_increment primary key," +
-                    "login varchar(255) not null unique," +
-                    "password varchar(255) not null," +
-                    "name varchar(255) null," +
-                    "email varchar(255) null" +
-                    ") comment 'User table'");
+    public void close() throws DaoException {
+        try {
+            connection.close();
         } catch (SQLException e) {
-            LOG.warning("Table create statement exception: " + e.getMessage());
-            throw new DaoException("Table create failed.", e);
-        }
-    }
-
-    @Override
-    public void dropTable() throws DaoException {
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("drop table if exists users");
-        } catch (SQLException e) {
-            LOG.warning("Table drop statement exception: " + e.getMessage());
-            throw new DaoException("Table drop failed.", e);
+            String msg = "User DAO connection close failed";
+            LOG.warning(msg + ": " + e.getMessage());
+            throw new DaoException(msg + ".", e);
         }
     }
 

@@ -1,34 +1,31 @@
 package com.javamentor.jmp_project.service;
 
-import com.javamentor.jmp_project.config.MySqlConfig;
-import com.javamentor.jmp_project.dao.UserDaoImpl;
+import com.javamentor.jmp_project.dao.UserDao;
+import com.javamentor.jmp_project.dao.UserDaoJdbcImpl;
 import com.javamentor.jmp_project.exception.DaoException;
-import com.javamentor.jmp_project.exception.DbException;
+import com.javamentor.jmp_project.exception.IllegalArgumentException;
 import com.javamentor.jmp_project.model.User;
 
 import java.util.List;
+import java.util.logging.Logger;
 
-public class UserServiceImpl implements UserService, AutoCloseable {
+public class UserServiceImpl implements UserService {
 
-    private MySqlConfig mySqlConfig;
-    private UserDaoImpl userDao;
+    private static final Logger LOG = Logger.getLogger(UserServiceImpl.class.getName());
+
+    private UserDao userDao;
 
     public UserServiceImpl() {
-        try {
-            mySqlConfig = new MySqlConfig();
-            userDao = new UserDaoImpl(mySqlConfig.getConnection());
-        } catch (DbException e) {
-            e.printStackTrace();
-        }
+        userDao = new UserDaoJdbcImpl();
     }
 
     @Override
-    public User getUser(Long id) throws DaoException {
+    public User getUser(Long id) throws DaoException, IllegalArgumentException {
         return userDao.getUser(id);
     }
 
     @Override
-    public User getUserByLogin(String login) throws DaoException {
+    public User getUserByLogin(String login) throws DaoException, IllegalArgumentException {
         return userDao.getUserByLogin(login);
     }
 
@@ -38,26 +35,28 @@ public class UserServiceImpl implements UserService, AutoCloseable {
     }
 
     @Override
-    public User createUser(User user) throws DaoException {
+    public User createUser(User user) throws DaoException, IllegalArgumentException {
         return userDao.createUser(user);
     }
 
     @Override
-    public User updateUser(User user) throws DaoException {
+    public User updateUser(User user) throws DaoException, IllegalArgumentException {
         return userDao.updateUser(user);
     }
 
     @Override
-    public void deleteUser(Long id) throws DaoException {
+    public void deleteUser(Long id) throws DaoException, IllegalArgumentException {
         userDao.deleteUser(id);
     }
 
     @Override
-    public void close() {
+    public void close() throws DaoException {
         try {
-            mySqlConfig.close();
-        } catch (DbException e) {
-            e.printStackTrace();
+            userDao.close();
+        } catch (DaoException e) {
+            String msg = "User service close failed";
+            LOG.warning(msg + ": " + e.getMessage());
+            throw new DaoException(msg + ".", e);
         }
     }
 

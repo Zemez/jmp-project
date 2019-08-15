@@ -1,7 +1,9 @@
 package com.javamentor.jmp_project.servlet.user;
 
 import com.javamentor.jmp_project.exception.DaoException;
+import com.javamentor.jmp_project.exception.IllegalArgumentException;
 import com.javamentor.jmp_project.model.User;
+import com.javamentor.jmp_project.service.UserService;
 import com.javamentor.jmp_project.service.UserServiceImpl;
 import com.javamentor.jmp_project.util.AlertMessage;
 import org.apache.commons.lang3.StringUtils;
@@ -38,12 +40,17 @@ public class CreateServlet extends HttpServlet {
             return;
         }
 
-        try (UserServiceImpl userService = new UserServiceImpl()) {
+        try (UserService userService = new UserServiceImpl()) {
             user = userService.createUser(user);
             request.setAttribute("user", user);
             request.setAttribute("note", new AlertMessage("Note: user successful added."));
             response.setStatus(HttpServletResponse.SC_OK);
             getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
+        } catch (IllegalArgumentException e) {
+            LOG.warning(e.getMessage());
+            request.getSession().setAttribute("error", new AlertMessage("Error: invalid user data."));
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.sendRedirect("/");
         } catch (DaoException e) {
             LOG.warning(e.getMessage());
             request.getSession().setAttribute("error", new AlertMessage("Error: user add failed."));

@@ -1,8 +1,6 @@
 package com.javamentor.jmp_project.exception;
 
-import java.sql.SQLException;
-
-public class DaoException extends SQLException {
+public class DaoException extends Exception {
 
     public DaoException(String reason) {
         super(reason);

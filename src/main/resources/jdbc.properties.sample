@@ -1,0 +1,7 @@
+jdbc.vendor=mysql
+jdbc.host=localhost
+#jdbc.failover=
+jdbc.port=3306
+jdbc.db=example_db
+jdbc.user=example_user
+jdbc.password=example_pass

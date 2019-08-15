@@ -24,7 +24,7 @@
   <p><input type="submit" value="update"></p>
 </form>
 
-<form action="<c:url value="/user/delete"/>" method="post">
+<form action="<c:url value="/user/delete"/>" method="get">
   <input type="hidden" name="id" value="<c:out value="${user.id}"/>">
   <input type="submit" value="delete">
 </form>

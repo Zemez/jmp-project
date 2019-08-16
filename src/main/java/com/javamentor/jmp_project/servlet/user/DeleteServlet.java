@@ -1,8 +1,8 @@
 package com.javamentor.jmp_project.servlet.user;
 
 import com.javamentor.jmp_project.exception.DaoException;
-import com.javamentor.jmp_project.exception.DataNotFoundException;
 import com.javamentor.jmp_project.exception.IllegalArgumentException;
+import com.javamentor.jmp_project.exception.NotFoundException;
 import com.javamentor.jmp_project.model.User;
 import com.javamentor.jmp_project.service.UserService;
 import com.javamentor.jmp_project.service.UserServiceImpl;
@@ -52,7 +52,7 @@ public class DeleteServlet extends HttpServlet {
             LOG.warning(e.getMessage());
             request.getSession().setAttribute("error", new AlertMessage("Error: invalid user data."));
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        } catch (DataNotFoundException e) {
+        } catch (NotFoundException e) {
             LOG.warning(e.getMessage());
             request.getSession().setAttribute("error", new AlertMessage("Error: user not found."));
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);

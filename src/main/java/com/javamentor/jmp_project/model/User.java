@@ -1,28 +1,42 @@
 package com.javamentor.jmp_project.model;
 
+import javax.persistence.*;
 import java.io.Serializable;
 
+@Entity
+@Table(name = "users")
 public class User implements Serializable {
 
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "login", unique = true, nullable = false)
     private String login;
+
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "email")
     private String email;
 
     public User() {
     }
 
     public User(String login, String password, String name, String email) {
-        this(null, login, password, name, email);
-    }
-
-    public User(Long id, String login, String password, String name, String email) {
-        this.id = id;
         this.login = login;
         this.password = password;
         this.name = name;
         this.email = email;
+    }
+
+    public User(Long id, String login, String password, String name, String email) {
+        this(login, password, name, email);
+        this.id = id;
     }
 
     public Long getId() {

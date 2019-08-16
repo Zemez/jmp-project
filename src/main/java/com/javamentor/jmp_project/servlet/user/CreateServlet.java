@@ -1,7 +1,7 @@
 package com.javamentor.jmp_project.servlet.user;
 
+import com.javamentor.jmp_project.exception.AlreadyExistsException;
 import com.javamentor.jmp_project.exception.DaoException;
-import com.javamentor.jmp_project.exception.DataAlreadyExistsException;
 import com.javamentor.jmp_project.exception.IllegalArgumentException;
 import com.javamentor.jmp_project.model.User;
 import com.javamentor.jmp_project.service.UserService;
@@ -52,7 +52,7 @@ public class CreateServlet extends HttpServlet {
             LOG.warning(e.getMessage());
             request.getSession().setAttribute("error", new AlertMessage("Error: invalid user data."));
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        } catch (DataAlreadyExistsException e) {
+        } catch (AlreadyExistsException e) {
             LOG.warning(e.getMessage());
             request.getSession().setAttribute("error", new AlertMessage("Error: user already exists."));
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);

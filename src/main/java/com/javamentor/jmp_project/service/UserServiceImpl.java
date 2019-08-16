@@ -1,13 +1,14 @@
 package com.javamentor.jmp_project.service;
 
 import com.javamentor.jmp_project.dao.UserDao;
-import com.javamentor.jmp_project.dao.UserDaoJdbcImpl;
+import com.javamentor.jmp_project.dao.UserDaoHibernateImpl;
+import com.javamentor.jmp_project.exception.AlreadyExistsException;
 import com.javamentor.jmp_project.exception.DaoException;
-import com.javamentor.jmp_project.exception.DataAlreadyExistsException;
-import com.javamentor.jmp_project.exception.DataNotFoundException;
 import com.javamentor.jmp_project.exception.IllegalArgumentException;
+import com.javamentor.jmp_project.exception.NotFoundException;
 import com.javamentor.jmp_project.model.User;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -17,8 +18,9 @@ public class UserServiceImpl implements UserService {
 
     private UserDao userDao;
 
-    public UserServiceImpl() {
-        userDao = new UserDaoJdbcImpl();
+    public UserServiceImpl() throws IOException {
+//        userDao = new UserDaoJdbcImpl();
+        userDao = new UserDaoHibernateImpl();
     }
 
     @Override
@@ -27,7 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByLogin(String login) throws DaoException, IllegalArgumentException {
+    public User getUserByLogin(String login) throws DaoException, IllegalArgumentException, NotFoundException {
         return userDao.getUserByLogin(login);
     }
 
@@ -37,17 +39,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User user) throws DaoException, IllegalArgumentException, DataAlreadyExistsException {
+    public User createUser(User user) throws DaoException, IllegalArgumentException, AlreadyExistsException {
         return userDao.createUser(user);
     }
 
     @Override
-    public User updateUser(User user) throws DaoException, IllegalArgumentException, DataNotFoundException {
+    public User updateUser(User user) throws DaoException, IllegalArgumentException, NotFoundException {
         return userDao.updateUser(user);
     }
 
     @Override
-    public void deleteUser(Long id) throws DaoException, IllegalArgumentException, DataNotFoundException {
+    public void deleteUser(Long id) throws DaoException, IllegalArgumentException, NotFoundException {
         userDao.deleteUser(id);
     }
 

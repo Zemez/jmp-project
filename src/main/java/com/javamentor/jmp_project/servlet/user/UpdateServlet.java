@@ -1,6 +1,7 @@
 package com.javamentor.jmp_project.servlet.user;
 
 import com.javamentor.jmp_project.exception.DaoException;
+import com.javamentor.jmp_project.exception.DataNotFoundException;
 import com.javamentor.jmp_project.exception.IllegalArgumentException;
 import com.javamentor.jmp_project.model.User;
 import com.javamentor.jmp_project.service.UserService;
@@ -43,11 +44,15 @@ public class UpdateServlet extends HttpServlet {
         try (UserService userService = new UserServiceImpl()) {
             user = userService.updateUser(user);
             request.setAttribute("note", new AlertMessage("Note: user successful updated."));
-            response.setStatus(HttpServletResponse.SC_OK);
+            response.setStatus(HttpServletResponse.SC_ACCEPTED);
         } catch (IllegalArgumentException e) {
             LOG.warning(e.getMessage());
             request.setAttribute("error", new AlertMessage("Error: invalid user data."));
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        } catch (DataNotFoundException e) {
+            LOG.warning(e.getMessage());
+            request.setAttribute("error", new AlertMessage("Error: user not found."));
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } catch (DaoException e) {
             LOG.warning(e.getMessage());
             request.setAttribute("error", new AlertMessage("Error: user update failed."));

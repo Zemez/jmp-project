@@ -13,6 +13,15 @@ public class JdbcConfig {
 
     private static final Logger LOG = Logger.getLogger(JdbcConfig.class.getName());
     private static final Properties PROP = new Properties();
+
+    static {
+        try {
+            PROP.load(Objects.requireNonNull(JdbcConfig.class.getClassLoader().getResourceAsStream("jdbc.properties")));
+        } catch (IOException e) {
+            LOG.log(Level.CONFIG, "JDBC properties load failed: " + e.getMessage());
+        }
+    }
+
     private static final String JDBC_VENDOR = PROP.getProperty("jdbc.vendor");
     private static final String JDBC_DRIVER = "com." + JDBC_VENDOR + ".jdbc.Driver";
     private static final String JDBC_PROTO = "jdbc:" + JDBC_VENDOR + ":";
@@ -32,14 +41,6 @@ public class JdbcConfig {
 
     static {
         try {
-            PROP.load(Objects.requireNonNull(JdbcConfig.class.getClassLoader().getResourceAsStream("jdbc.properties")));
-        } catch (IOException e) {
-            LOG.log(Level.CONFIG, "JDBC properties load failed: " + e.getMessage());
-        }
-    }
-
-    static {
-        try {
             Class.forName(JDBC_DRIVER);
         } catch (ClassNotFoundException e) {
             LOG.log(Level.CONFIG, "JDBC driver initialization failed: " + e.getMessage());
@@ -48,6 +49,9 @@ public class JdbcConfig {
 
     public static Connection getConnection() {
         try {
+            LOG.info("url: " + JDBC_URL);
+            LOG.info("user: " + JDBC_USER);
+            LOG.info("pass: " + JDBC_PASS);
             return DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASS);
         } catch (SQLException e) {
             String msg = "JDBC get connection failed";

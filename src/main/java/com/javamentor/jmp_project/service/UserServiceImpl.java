@@ -3,6 +3,8 @@ package com.javamentor.jmp_project.service;
 import com.javamentor.jmp_project.dao.UserDao;
 import com.javamentor.jmp_project.dao.UserDaoJdbcImpl;
 import com.javamentor.jmp_project.exception.DaoException;
+import com.javamentor.jmp_project.exception.DataAlreadyExistsException;
+import com.javamentor.jmp_project.exception.DataNotFoundException;
 import com.javamentor.jmp_project.exception.IllegalArgumentException;
 import com.javamentor.jmp_project.model.User;
 
@@ -35,17 +37,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User user) throws DaoException, IllegalArgumentException {
+    public User createUser(User user) throws DaoException, IllegalArgumentException, DataAlreadyExistsException {
         return userDao.createUser(user);
     }
 
     @Override
-    public User updateUser(User user) throws DaoException, IllegalArgumentException {
+    public User updateUser(User user) throws DaoException, IllegalArgumentException, DataNotFoundException {
         return userDao.updateUser(user);
     }
 
     @Override
-    public void deleteUser(Long id) throws DaoException, IllegalArgumentException {
+    public void deleteUser(Long id) throws DaoException, IllegalArgumentException, DataNotFoundException {
         userDao.deleteUser(id);
     }
 

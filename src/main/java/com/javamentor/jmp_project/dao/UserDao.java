@@ -1,6 +1,8 @@
 package com.javamentor.jmp_project.dao;
 
 import com.javamentor.jmp_project.exception.DaoException;
+import com.javamentor.jmp_project.exception.DataAlreadyExistsException;
+import com.javamentor.jmp_project.exception.DataNotFoundException;
 import com.javamentor.jmp_project.exception.IllegalArgumentException;
 import com.javamentor.jmp_project.model.User;
 
@@ -14,11 +16,11 @@ public interface UserDao extends AutoCloseable {
 
     List<User> getAllUsers() throws DaoException;
 
-    User createUser(User user) throws DaoException, IllegalArgumentException;
+    User createUser(User user) throws DaoException, IllegalArgumentException, DataAlreadyExistsException;
 
-    User updateUser(User user) throws DaoException, IllegalArgumentException;
+    User updateUser(User user) throws DaoException, IllegalArgumentException, DataNotFoundException;
 
-    void deleteUser(Long id) throws DaoException, IllegalArgumentException;
+    void deleteUser(Long id) throws DaoException, IllegalArgumentException, DataNotFoundException;
 
     void close() throws DaoException;
 

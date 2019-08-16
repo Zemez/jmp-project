@@ -36,7 +36,7 @@ public class ReadServlet extends HttpServlet {
                     getServletContext().getRequestDispatcher("/jsp/users.jsp").forward(request, response);
                 } else {
                     request.getSession().setAttribute("error", new AlertMessage("Error: users not found."));
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     response.sendRedirect("/");
                 }
             } else {
@@ -57,7 +57,7 @@ public class ReadServlet extends HttpServlet {
 
                 if (user == null) {
                     request.getSession().setAttribute("error", new AlertMessage("Error: user not found."));
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     response.sendRedirect("/");
                     return;
                 }
@@ -66,15 +66,15 @@ public class ReadServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_OK);
                 getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
             }
-        } catch (DaoException e) {
-            LOG.warning(e.getMessage());
-            request.getSession().setAttribute("error", new AlertMessage("Error: user read failed."));
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.sendRedirect("/");
         } catch (IllegalArgumentException e) {
             LOG.warning(e.getMessage());
             request.getSession().setAttribute("error", new AlertMessage("Error: invalid user data."));
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.sendRedirect("/");
+        } catch (DaoException e) {
+            LOG.warning(e.getMessage());
+            request.getSession().setAttribute("error", new AlertMessage("Error: user read failed."));
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.sendRedirect("/");
         }
     }

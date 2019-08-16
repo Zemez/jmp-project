@@ -1,6 +1,7 @@
 package com.javamentor.jmp_project.servlet.user;
 
 import com.javamentor.jmp_project.exception.DaoException;
+import com.javamentor.jmp_project.exception.DataNotFoundException;
 import com.javamentor.jmp_project.exception.IllegalArgumentException;
 import com.javamentor.jmp_project.model.User;
 import com.javamentor.jmp_project.service.UserService;
@@ -34,7 +35,7 @@ public class DeleteServlet extends HttpServlet {
                     } catch (DaoException e) {
                         LOG.warning(e.getMessage());
                         request.getSession().setAttribute("error", new AlertMessage("Error: user not found."));
-                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     }
                 } else {
                     request.getSession().setAttribute("error", new AlertMessage("Error: invalid user data."));
@@ -47,14 +48,18 @@ public class DeleteServlet extends HttpServlet {
                 request.getSession().setAttribute("note", new AlertMessage("Note: user successful deleted."));
                 response.setStatus(HttpServletResponse.SC_ACCEPTED);
             }
-        } catch (DaoException e) {
-            LOG.warning(e.getMessage());
-            request.getSession().setAttribute("error", new AlertMessage("Error: user delete failed."));
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         } catch (IllegalArgumentException e) {
             LOG.warning(e.getMessage());
             request.getSession().setAttribute("error", new AlertMessage("Error: invalid user data."));
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        } catch (DataNotFoundException e) {
+            LOG.warning(e.getMessage());
+            request.getSession().setAttribute("error", new AlertMessage("Error: user not found."));
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } catch (DaoException e) {
+            LOG.warning(e.getMessage());
+            request.getSession().setAttribute("error", new AlertMessage("Error: user delete failed."));
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
         response.sendRedirect("/");
     }

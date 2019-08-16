@@ -2,6 +2,8 @@ package com.javamentor.jmp_project.dao;
 
 import com.javamentor.jmp_project.config.JdbcConfig;
 import com.javamentor.jmp_project.exception.DaoException;
+import com.javamentor.jmp_project.exception.DataAlreadyExistsException;
+import com.javamentor.jmp_project.exception.DataNotFoundException;
 import com.javamentor.jmp_project.exception.IllegalArgumentException;
 import com.javamentor.jmp_project.model.User;
 import org.apache.commons.lang3.StringUtils;
@@ -34,8 +36,8 @@ public class UserDaoJdbcImpl implements UserDao {
         return getUserBy("login", login);
     }
 
-    private User getUserBy(String field, Object value) throws DaoException {
-        if (StringUtils.isBlank(field) || String.valueOf(value).isBlank()) throw new DaoException("Invalid data.");
+    private User getUserBy(String field, Object value) throws DaoException, IllegalArgumentException {
+        if (StringUtils.isBlank(field) || String.valueOf(value).isBlank()) throw new IllegalArgumentException("Invalid data.");
 
         String sql = "select * from users where " + field + "=?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -92,8 +94,8 @@ public class UserDaoJdbcImpl implements UserDao {
     }
 
     @Override
-    public User createUser(User user) throws DaoException, IllegalArgumentException {
-        if (getUserBy("login", user.getLogin()) != null) throw new DaoException("User already exists.");
+    public User createUser(User user) throws DaoException, IllegalArgumentException, DataAlreadyExistsException {
+        if (getUserBy("login", user.getLogin()) != null) throw new DataAlreadyExistsException("User already exists.");
 
         String sql = "insert into users (login, password, name, email) values (?,?,?,?)";
 
@@ -124,7 +126,7 @@ public class UserDaoJdbcImpl implements UserDao {
     }
 
     @Override
-    public User updateUser(User user) throws DaoException, IllegalArgumentException {
+    public User updateUser(User user) throws DaoException, IllegalArgumentException, DataNotFoundException {
         if (user == null) throw new IllegalArgumentException("Invalid user.");
 
         Long id = user.getId();
@@ -133,7 +135,7 @@ public class UserDaoJdbcImpl implements UserDao {
 
         User userOld = getUser(id);
 
-        if (userOld == null) throw new DaoException("User not found.");
+        if (userOld == null) throw new DataNotFoundException("User not found.");
         if (!userOld.getLogin().equals(user.getLogin())) throw new IllegalArgumentException("Couldn't change login.");
 
         StringBuilder sql = new StringBuilder("update users set");
@@ -175,8 +177,8 @@ public class UserDaoJdbcImpl implements UserDao {
     }
 
     @Override
-    public void deleteUser(Long id) throws DaoException, IllegalArgumentException {
-        if (id == null || id < 1) throw new IllegalArgumentException("Invalid id.");
+    public void deleteUser(Long id) throws DaoException, IllegalArgumentException, DataNotFoundException {
+        if (getUser(id) == null) throw  new DataNotFoundException("User not found.");
 
         String sql = "delete from users where id=?";
 

@@ -1,6 +1,7 @@
 package com.javamentor.jmp_project.servlet.user;
 
 import com.javamentor.jmp_project.exception.DaoException;
+import com.javamentor.jmp_project.exception.DataAlreadyExistsException;
 import com.javamentor.jmp_project.exception.IllegalArgumentException;
 import com.javamentor.jmp_project.model.User;
 import com.javamentor.jmp_project.service.UserService;
@@ -43,20 +44,24 @@ public class CreateServlet extends HttpServlet {
         try (UserService userService = new UserServiceImpl()) {
             user = userService.createUser(user);
             request.setAttribute("user", user);
-            request.setAttribute("note", new AlertMessage("Note: user successful added."));
-            response.setStatus(HttpServletResponse.SC_OK);
+            request.setAttribute("note", new AlertMessage("Note: user successful created."));
+            response.setStatus(HttpServletResponse.SC_CREATED);
             getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
+            return;
         } catch (IllegalArgumentException e) {
             LOG.warning(e.getMessage());
             request.getSession().setAttribute("error", new AlertMessage("Error: invalid user data."));
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.sendRedirect("/");
+        } catch (DataAlreadyExistsException e) {
+            LOG.warning(e.getMessage());
+            request.getSession().setAttribute("error", new AlertMessage("Error: user already exists."));
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         } catch (DaoException e) {
             LOG.warning(e.getMessage());
-            request.getSession().setAttribute("error", new AlertMessage("Error: user add failed."));
+            request.getSession().setAttribute("error", new AlertMessage("Error: user create failed."));
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.sendRedirect("/");
         }
+        response.sendRedirect("/");
     }
 
 }

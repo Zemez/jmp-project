@@ -16,7 +16,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.TypedQuery;
-import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -25,7 +24,7 @@ public class UserDaoHibernateImpl implements UserDao {
     private static final Logger LOG = Logger.getLogger(UserDaoHibernateImpl.class.getName());
     private SessionFactory sessionFactory;
 
-    public UserDaoHibernateImpl() throws IOException {
+    public UserDaoHibernateImpl() {
         sessionFactory = HibernateConfig.getSessionFactory();
     }
 
@@ -51,6 +50,7 @@ public class UserDaoHibernateImpl implements UserDao {
 
     private List<User> getUsersBy(String field, Object value) throws DaoException, NotFoundException {
         try (Session session = sessionFactory.openSession()) {
+            //noinspection JpaQlInspection
             TypedQuery<User> query = session.createQuery("from User where " + field + "=:value", User.class);
             query.setParameter("value", value);
             return query.getResultList();
@@ -65,7 +65,8 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public List<User> getAllUsers() throws DaoException {
         try (Session session = sessionFactory.openSession()) {
-            return session.createQuery("select u from User u", User.class).list();
+            //noinspection JpaQlInspection
+            return session.createQuery("from User", User.class).list();
         } catch (HibernateException e) {
             LOG.warning(e.getClass().getName() + ": " + e.getMessage());
             throw new DaoException("Users read failed.", e);
@@ -97,7 +98,7 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
             if (session.get(User.class, user.getId()) == null) throw new NotFoundException("User not found.");
-            session.update(user);
+            session.merge(user);
             transaction.commit();
             return user;
         } catch (OptimisticLockException e) {

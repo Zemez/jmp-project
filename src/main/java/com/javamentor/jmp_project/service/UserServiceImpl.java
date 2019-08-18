@@ -1,7 +1,7 @@
 package com.javamentor.jmp_project.service;
 
 import com.javamentor.jmp_project.dao.UserDao;
-import com.javamentor.jmp_project.dao.UserDaoJdbcImpl;
+import com.javamentor.jmp_project.dao.UserDaoHibernateImpl;
 import com.javamentor.jmp_project.exception.AlreadyExistsException;
 import com.javamentor.jmp_project.exception.DaoException;
 import com.javamentor.jmp_project.exception.InvalidArgumentException;
@@ -12,11 +12,19 @@ import java.util.List;
 
 public class UserServiceImpl implements UserService {
 
+    private static UserService userService;
     private UserDao userDao;
 
-    public UserServiceImpl() {
-        userDao = new UserDaoJdbcImpl();
-//        userDao = new UserDaoHibernateImpl();
+    private UserServiceImpl() {
+//        userDao = new UserDaoJdbcImpl();
+        userDao = new UserDaoHibernateImpl();
+    }
+
+    public static UserService getInstance() {
+        if (userService == null) {
+            userService = new UserServiceImpl();
+        }
+        return userService;
     }
 
     @Override

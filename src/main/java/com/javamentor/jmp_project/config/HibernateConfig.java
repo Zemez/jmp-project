@@ -9,6 +9,7 @@ import org.hibernate.service.ServiceRegistry;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class HibernateConfig {
@@ -17,7 +18,7 @@ public class HibernateConfig {
 
     private static SessionFactory sessionFactory;
 
-    public static synchronized SessionFactory getSessionFactory() throws IOException {
+    public static synchronized SessionFactory getSessionFactory() {
         if (sessionFactory == null || sessionFactory.isClosed()) {
             sessionFactory = createSessionFactory();
             LOG.info("New session factory created.");
@@ -25,9 +26,14 @@ public class HibernateConfig {
         return sessionFactory;
     }
 
-    private static SessionFactory createSessionFactory() throws IOException {
+    private static SessionFactory createSessionFactory() {
         Properties properties = new Properties();
-        properties.load(Objects.requireNonNull(HibernateConfig.class.getClassLoader().getResourceAsStream("hibernate.properties")));
+
+        try {
+            properties.load(Objects.requireNonNull(HibernateConfig.class.getClassLoader().getResourceAsStream("hibernate.properties")));
+        } catch (IOException e) {
+            LOG.log(Level.CONFIG, "Hibernate properties load failed: " + e.getMessage());
+        }
 
         Configuration configuration = new Configuration();
         configuration.setProperties(properties);

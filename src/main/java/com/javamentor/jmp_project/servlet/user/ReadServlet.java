@@ -20,7 +20,7 @@ import java.util.List;
 @WebServlet(name = "UserRead", urlPatterns = {"/user", "/user/all", "/user/read", "/user/read/all"})
 public class ReadServlet extends HttpServlet {
 
-    private UserService userService = new UserServiceImpl();
+    private UserService userService = UserServiceImpl.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

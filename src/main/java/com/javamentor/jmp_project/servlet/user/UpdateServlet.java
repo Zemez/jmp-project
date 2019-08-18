@@ -20,7 +20,7 @@ import java.io.IOException;
 @WebServlet(name = "UserUpdate", urlPatterns = "/user/update")
 public class UpdateServlet extends HttpServlet {
 
-    private UserService userService = new UserServiceImpl();
+    private UserService userService = UserServiceImpl.getInstance();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

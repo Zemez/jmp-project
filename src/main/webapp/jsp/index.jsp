@@ -25,7 +25,7 @@
   <label>Get user by login: <input type="text" name="login"><input type="submit" value="get"></label>
 </form>
 
-<p>Create user:</p>
+<h3>Create user:</h3>
 
 <form action="<c:url value="/user/create"/>" method="post">
   <%--@elvariable id="user" type="com.javamentor.jmp_project.model.User"--%>

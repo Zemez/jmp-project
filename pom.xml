@@ -20,10 +20,16 @@
     </properties>
 
     <dependencies>
+        <!--        <dependency>-->
+        <!--            <groupId>junit</groupId>-->
+        <!--            <artifactId>junit</artifactId>-->
+        <!--            <version>4.13-beta-3</version>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.5.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -55,48 +61,55 @@
 
     <build>
         <finalName>jmp-project</finalName>
-        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-            <plugins>
-                <plugin>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.1.0</version>
-                </plugin>
-                <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging -->
-                <plugin>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.1.0</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.2</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>3.2.3</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>2.5.2</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.8.2</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M3</version>
             </plugin>
         </plugins>
+        <!--        <pluginManagement>&lt;!&ndash; lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) &ndash;&gt;-->
+        <!--            <plugins>-->
+        <!--                <plugin>-->
+        <!--                    <artifactId>maven-clean-plugin</artifactId>-->
+        <!--                    <version>3.1.0</version>-->
+        <!--                </plugin>-->
+        <!--                &lt;!&ndash; see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging &ndash;&gt;-->
+        <!--                <plugin>-->
+        <!--                    <artifactId>maven-resources-plugin</artifactId>-->
+        <!--                    <version>3.1.0</version>-->
+        <!--                </plugin>-->
+        <!--                <plugin>-->
+        <!--                    <artifactId>maven-compiler-plugin</artifactId>-->
+        <!--                    <version>3.8.1</version>-->
+        <!--                </plugin>-->
+        <!--                <plugin>-->
+        <!--                    <artifactId>maven-surefire-plugin</artifactId>-->
+        <!--                    <version>2.22.2</version>-->
+        <!--                </plugin>-->
+        <!--                <plugin>-->
+        <!--                    <artifactId>maven-war-plugin</artifactId>-->
+        <!--                    <version>3.2.3</version>-->
+        <!--                </plugin>-->
+        <!--                <plugin>-->
+        <!--                    <artifactId>maven-install-plugin</artifactId>-->
+        <!--                    <version>2.5.2</version>-->
+        <!--                </plugin>-->
+        <!--                <plugin>-->
+        <!--                    <artifactId>maven-deploy-plugin</artifactId>-->
+        <!--                    <version>2.8.2</version>-->
+        <!--                </plugin>-->
+        <!--            </plugins>-->
+        <!--        </pluginManagement>-->
+        <!--        <plugins>-->
+        <!--            <plugin>-->
+        <!--                <groupId>org.apache.maven.plugins</groupId>-->
+        <!--                <artifactId>maven-compiler-plugin</artifactId>-->
+        <!--                <configuration>-->
+        <!--                    <source>${java.version}</source>-->
+        <!--                    <target>${java.version}</target>-->
+        <!--                </configuration>-->
+        <!--            </plugin>-->
+        <!--        </plugins>-->
     </build>
 </project>

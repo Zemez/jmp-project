@@ -33,6 +33,7 @@ public class HibernateConfig {
             properties.load(Objects.requireNonNull(HibernateConfig.class.getClassLoader().getResourceAsStream("hibernate.properties")));
         } catch (IOException e) {
             LOG.log(Level.CONFIG, "Hibernate properties load failed: " + e.getMessage());
+            return null;
         }
 
         Configuration configuration = new Configuration();

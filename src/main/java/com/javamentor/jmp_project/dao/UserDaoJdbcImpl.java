@@ -1,6 +1,5 @@
 package com.javamentor.jmp_project.dao;
 
-import com.javamentor.jmp_project.config.JdbcConfig;
 import com.javamentor.jmp_project.exception.AlreadyExistsException;
 import com.javamentor.jmp_project.exception.DaoException;
 import com.javamentor.jmp_project.exception.InvalidArgumentException;
@@ -16,9 +15,14 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.logging.Logger;
 
-public class UserDaoJdbcImpl implements UserDao {
+public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
 
     private static final Logger LOG = Logger.getLogger(UserDaoJdbcImpl.class.getName());
+    private Connection connection;
+
+    public UserDaoJdbcImpl(Connection connection) {
+        this.connection = connection;
+    }
 
     @Override
     public User getUser(Long id) throws DaoException, InvalidArgumentException {
@@ -150,68 +154,57 @@ public class UserDaoJdbcImpl implements UserDao {
 
     // Executors
     private <T> T execPreparedQuery(String sql, List<Object> params, QueryResultSetHandler<T> handler) throws DaoException {
-        try (Connection connection = JdbcConfig.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                for (int i = 0; i < params.size(); i++) {
-                    statement.setObject(i + 1, params.get(i));
-                }
-                LOG.info("statement: " + statement);
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    return handler.handle(resultSet);
-                } catch (SQLException e) {
-                    LOG.warning("User query result exception: " + e.getMessage());
-                    throw new DaoException("User query result failed", e);
-                }
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (int i = 0; i < params.size(); i++) {
+                statement.setObject(i + 1, params.get(i));
+            }
+            LOG.info("statement: " + statement);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return handler.handle(resultSet);
             } catch (SQLException e) {
-                LOG.warning("User query statement exception: " + e.getMessage());
-                throw new DaoException("User query statement failed.", e);
+                LOG.warning("User query result exception: " + e.getMessage());
+                throw new DaoException("User query result failed", e);
             }
         } catch (SQLException e) {
-            LOG.warning("Database connection exception: " + e.getMessage());
-            throw new DaoException("Database connection failed.", e);
+            LOG.warning("User query statement exception: " + e.getMessage());
+            throw new DaoException("User query statement failed.", e);
         }
     }
 
     private int execPreparedUpdate(String sql, List<Object> params) throws DaoException {
-        try (Connection connection = JdbcConfig.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                for (int i = 0; i < params.size(); i++) {
-                    statement.setObject(i + 1, params.get(i));
-                }
-                LOG.info("statement: " + statement);
-                return statement.executeUpdate();
-            } catch (SQLException e) {
-                LOG.warning("User update statement exception: " + e.getMessage());
-                throw new DaoException("User update statement failed.", e);
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (int i = 0; i < params.size(); i++) {
+                statement.setObject(i + 1, params.get(i));
             }
+            LOG.info("statement: " + statement);
+            return statement.executeUpdate();
         } catch (SQLException e) {
-            LOG.warning("Database connection exception: " + e.getMessage());
-            throw new DaoException("Database connection failed.", e);
+            LOG.warning("User update statement exception: " + e.getMessage());
+            throw new DaoException("User update statement failed.", e);
         }
     }
 
     private <T> T execPreparedUpdate(String sql, List<Object> params, UpdateResultSetHandler<T> handler) throws DaoException {
-        try (Connection connection = JdbcConfig.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                for (int i = 0; i < params.size(); i++) {
-                    statement.setObject(i + 1, params.get(i));
-                }
-                LOG.info("statement: " + statement);
-                int rows = statement.executeUpdate();
-                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                    return handler.handle(rows, generatedKeys);
-                } catch (SQLException e) {
-                    LOG.warning("User update result exception: " + e.getMessage());
-                    throw new DaoException("User update result failed", e);
-                }
+        try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            for (int i = 0; i < params.size(); i++) {
+                statement.setObject(i + 1, params.get(i));
+            }
+            LOG.info("statement: " + statement);
+            int rows = statement.executeUpdate();
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                return handler.handle(rows, generatedKeys);
             } catch (SQLException e) {
-                LOG.warning("User update statement exception: " + e.getMessage());
-                throw new DaoException("User update statement failed.", e);
+                LOG.warning("User update result exception: " + e.getMessage());
+                throw new DaoException("User update result failed", e);
             }
         } catch (SQLException e) {
-            LOG.warning("Database connection exception: " + e.getMessage());
-            throw new DaoException("Database connection failed.", e);
+            LOG.warning("User update statement exception: " + e.getMessage());
+            throw new DaoException("User update statement failed.", e);
         }
     }
 
+    @Override
+    public void close() throws Exception {
+        connection.close();
+    }
 }

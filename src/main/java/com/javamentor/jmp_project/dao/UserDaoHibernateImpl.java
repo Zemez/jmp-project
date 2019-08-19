@@ -1,6 +1,5 @@
 package com.javamentor.jmp_project.dao;
 
-import com.javamentor.jmp_project.config.HibernateConfig;
 import com.javamentor.jmp_project.exception.AlreadyExistsException;
 import com.javamentor.jmp_project.exception.DaoException;
 import com.javamentor.jmp_project.exception.InvalidArgumentException;
@@ -24,8 +23,8 @@ public class UserDaoHibernateImpl implements UserDao {
     private static final Logger LOG = Logger.getLogger(UserDaoHibernateImpl.class.getName());
     private SessionFactory sessionFactory;
 
-    public UserDaoHibernateImpl() {
-        sessionFactory = HibernateConfig.getSessionFactory();
+    public UserDaoHibernateImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.javamentor.jmp_project.service;
 
+import com.javamentor.jmp_project.config.StorageConfig;
 import com.javamentor.jmp_project.dao.UserDao;
-import com.javamentor.jmp_project.dao.UserDaoFactory;
 import com.javamentor.jmp_project.exception.AlreadyExistsException;
 import com.javamentor.jmp_project.exception.DaoException;
 import com.javamentor.jmp_project.exception.InvalidArgumentException;
@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
 
     private UserServiceImpl() {
-        userDao = UserDaoFactory.getUserDao();
+        userDao = StorageConfig.getDaoFactory().getUserDao();
     }
 
     public static UserService getInstance() {

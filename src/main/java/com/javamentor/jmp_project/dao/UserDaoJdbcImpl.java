@@ -45,6 +45,7 @@ public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
                             rs.getLong("id"),
                             rs.getString("login"),
                             rs.getString("password"),
+                            rs.getString("role"),
                             rs.getString("name"),
                             rs.getString("email")
                     );
@@ -62,6 +63,7 @@ public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
                                 rs.getLong("id"),
                                 rs.getString("login"),
                                 rs.getString("password"),
+                                rs.getString("role"),
                                 rs.getString("name"),
                                 rs.getString("email")
                         ));
@@ -75,8 +77,8 @@ public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
         if (user == null) throw new InvalidArgumentException("Invalid null user.");
         if (getUserBy("login", user.getLogin()) != null) throw new AlreadyExistsException("User already exists.");
 
-        Long id = execPreparedUpdate("insert into users (login, password, name, email) values (?,?,?,?)",
-                List.of(user.getLogin(), user.getPassword(), user.getName(), user.getEmail()),
+        Long id = execPreparedUpdate("insert into users (login,password,role,name,email) values (?,?,?,?,?)",
+                List.of(user.getLogin(), user.getPassword(), user.getRole(), user.getName(), user.getEmail()),
                 (rows, keys) -> {
                     if (rows < 1) throw new DaoException("User add failed.");
                     if (rows > 1) throw new DaoException("Something going wrong: more than 1 rows created!");
@@ -102,6 +104,7 @@ public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
         StringJoiner joiner = new StringJoiner(",");
         List<Object> params = new ArrayList<>();
 
+        // could be shot my leg
         for (Field field : User.class.getDeclaredFields()) {
             String fieldName = field.getName();
             if (!List.of("id", "login").contains(fieldName)) {
@@ -117,19 +120,6 @@ public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
                 }
             }
         }
-
-//        if (!userOld.getPassword().equals(user.getPassword())) {
-//            joiner.add("password=?");
-//            params.add(user.getPassword());
-//        }
-//        if (!userOld.getName().equals(user.getName())) {
-//            joiner.add("name=?");
-//            params.add(user.getName());
-//        }
-//        if (!userOld.getEmail().equals(user.getEmail())) {
-//            joiner.add("email=?");
-//            params.add(user.getEmail());
-//        }
 
         if (params.size() < 1) throw new DaoException("Nothing to update.");
 

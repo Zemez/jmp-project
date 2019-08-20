@@ -11,10 +11,10 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.query.Query;
 
 import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
-import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -34,7 +34,7 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = sessionFactory.openSession()) {
             return session.get(User.class, id);
         } catch (HibernateException e) {
-            LOG.warning(e.getClass().getName() + ": " + e.getMessage());
+            LOG.warning("User read failed: " + e.getMessage());
             throw new DaoException("User read failed.", e);
         }
     }
@@ -50,13 +50,13 @@ public class UserDaoHibernateImpl implements UserDao {
     private List<User> getUsersBy(String field, Object value) throws DaoException, NotFoundException {
         try (Session session = sessionFactory.openSession()) {
             //noinspection JpaQlInspection
-            TypedQuery<User> query = session.createQuery("from User where " + field + "=:value", User.class);
+            Query<User> query = session.createQuery("from User where " + field + "=:value", User.class);
             query.setParameter("value", value);
             return query.getResultList();
         } catch (NoResultException e) {
             throw new NotFoundException("Users not found.", e);
         } catch (HibernateException e) {
-            LOG.warning(e.getClass().getName() + ": " + e.getMessage());
+            LOG.warning("Users read failed: " + e.getMessage());
             throw new DaoException("Users read failed.", e);
         }
     }
@@ -67,7 +67,7 @@ public class UserDaoHibernateImpl implements UserDao {
             //noinspection JpaQlInspection
             return session.createQuery("from User", User.class).list();
         } catch (HibernateException e) {
-            LOG.warning(e.getClass().getName() + ": " + e.getMessage());
+            LOG.warning("Users read failed: " + e.getMessage());
             throw new DaoException("Users read failed.", e);
         }
     }
@@ -83,7 +83,7 @@ public class UserDaoHibernateImpl implements UserDao {
         } catch (ConstraintViolationException e) {
             throw new AlreadyExistsException("User already exists.", e);
         } catch (HibernateException e) {
-            LOG.warning(e.getClass().getName() + ": " + e.getMessage());
+            LOG.warning("User create failed: " + e.getMessage());
             throw new DaoException("User create failed.", e);
         }
     }
@@ -104,7 +104,7 @@ public class UserDaoHibernateImpl implements UserDao {
             if (transaction != null) transaction.rollback();
             throw new NotFoundException("User was deleted.", e);
         } catch (HibernateException e) {
-            LOG.warning(e.getClass().getName() + ": " + e.getMessage());
+            LOG.warning("User update failed: " + e.getMessage());
             if (transaction != null) transaction.rollback();
             throw new DaoException("User update failed.", e);
         }
@@ -125,7 +125,7 @@ public class UserDaoHibernateImpl implements UserDao {
             if (transaction != null) transaction.rollback();
             throw new InvalidArgumentException("Invalid user id.", e);
         } catch (HibernateException e) {
-            LOG.warning(e.getClass().getName() + ": " + e.getMessage());
+            LOG.warning("User delete failed: " + e.getMessage());
             if (transaction != null) transaction.rollback();
             throw new DaoException("User delete failed.", e);
         }

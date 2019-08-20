@@ -11,21 +11,30 @@
 <c:import url="nav.jsp"/>
 <c:import url="alerts.jsp"/>
 
-<h2>CRUD: user</h2>
+<h3>User:</h3>
 
-<form action="<c:url value="/user/update"/>" method="post">
-  <jsp:useBean id="user" scope="request" type="com.javamentor.jmp_project.model.User"/>
-  <p><label>Id: <input type="text" name="id" value="<c:out value="${user.id}" />" readonly="readonly"></label></p>
-  <p><label>Login: <input type="text" name="login" value="<c:out value="${user.login}"/>" readonly="readonly"></label>
+<jsp:useBean id="user" scope="session" type="com.javamentor.jmp_project.model.User"/>
+<form action="<c:url value="${user.role=='admin' ? '/admin/update' : '/user/update'}"/>" method="post">
+  <jsp:useBean id="_user" scope="request" type="com.javamentor.jmp_project.model.User"/>
+  <p><label>Id: <input type="text" name="id" value="<c:out value="${_user.id}" />" readonly="readonly"></label></p>
+  <p><label>Login: <input type="text" name="login" value="<c:out value="${_user.login}"/>" readonly="readonly"></label>
   </p>
-  <p><label>Password: <input type="text" name="password" value=<c:out value="${user.password}"/>></label></p>
-  <p><label>Name: <input type="text" name="name" value=<c:out value="${user.name}"/>></label></p>
-  <p><label>Email: <input type="text" name="email" value=<c:out value="${user.email}"/>></label></p>
+  <p><label>Password: <input type="text" name="password" value=<c:out value="${_user.password}"/>></label></p>
+  <p>
+    <label>Role:
+      <select name="role" default="user">
+        <option value="user"<c:if test="${_user.role=='user'}"> selected</c:if>>user</option>
+        <option value="admin"<c:if test="${_user.role=='admin'}"> selected</c:if>>admin</option>
+      </select>
+    </label>
+  </p>
+  <p><label>Name: <input type="text" name="name" value=<c:out value="${_user.name}"/>></label></p>
+  <p><label>Email: <input type="text" name="email" value=<c:out value="${_user.email}"/>></label></p>
   <p><input type="submit" value="update"></p>
 </form>
 
-<form action="<c:url value="/user/delete"/>" method="get">
-  <input type="hidden" name="id" value="<c:out value="${user.id}"/>">
+<form action="<c:url value="${user.role=='admin' ? '/admin/delete' : '/user/delete'}"/>" method="get">
+  <c:if test="${user.role=='admin'}"><input type="hidden" name="id" value="<c:out value="${_user.id}"/>"></c:if>
   <input type="submit" value="delete">
 </form>
 

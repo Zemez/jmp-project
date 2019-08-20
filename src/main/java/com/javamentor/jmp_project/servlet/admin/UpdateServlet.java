@@ -1,4 +1,4 @@
-package com.javamentor.jmp_project.servlet.user;
+package com.javamentor.jmp_project.servlet.admin;
 
 import com.javamentor.jmp_project.exception.DaoException;
 import com.javamentor.jmp_project.exception.InvalidArgumentException;
@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "UserUpdate", urlPatterns = "/user/update")
+@WebServlet(name = "AdminUpdate", urlPatterns = "/admin/update")
 public class UpdateServlet extends HttpServlet {
 
     private UserService userService = UserServiceImpl.getInstance();
@@ -33,9 +33,7 @@ public class UpdateServlet extends HttpServlet {
         String name = request.getParameter("name");
         String email = request.getParameter("email");
 
-        User userOld = (User) request.getSession().getAttribute("user");
-
-        if (id == null || !id.equals(userOld.getId()) || StringUtils.isBlank(login) || StringUtils.isBlank(password)) {
+        if (id == null || StringUtils.isBlank(login) || StringUtils.isBlank(password)) {
             request.getSession().setAttribute("error", new ErrorMessage("Invalid user data."));
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.sendRedirect("/");
@@ -59,7 +57,9 @@ public class UpdateServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
 
-        request.getSession().setAttribute("user", user);
+        if (((User) request.getSession().getAttribute("user")).getId().equals(id)) {
+            request.getSession().setAttribute("user", user);
+        }
         request.setAttribute("_user", user);
         getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
     }

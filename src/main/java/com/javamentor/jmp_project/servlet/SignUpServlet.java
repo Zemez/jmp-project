@@ -1,4 +1,4 @@
-package com.javamentor.jmp_project.servlet.user;
+package com.javamentor.jmp_project.servlet;
 
 import com.javamentor.jmp_project.exception.AlreadyExistsException;
 import com.javamentor.jmp_project.exception.DaoException;
@@ -17,10 +17,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "UserCreate", urlPatterns = "/user/create")
-public class CreateServlet extends HttpServlet {
+@WebServlet(name = "SignUp", urlPatterns = {"/signup"})
+public class SignUpServlet extends HttpServlet {
 
     private UserService userService = UserServiceImpl.getInstance();
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html;charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        getServletContext().getRequestDispatcher("/jsp/signup.jsp").forward(request, response);
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

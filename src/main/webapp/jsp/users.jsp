@@ -11,21 +11,29 @@
 <c:import url="nav.jsp"/>
 <c:import url="alerts.jsp"/>
 
-<h2>CRUD: users</h2>
+<h3>Users:</h3>
 
 <div>
   <table>
     <thead>
-      <tr><th>Id</th><th>Login</th><th>Password</th><th>Name</th><th>Email</th></tr>
+    <tr>
+      <th>Id</th>
+      <th>Login</th>
+      <th>Password</th>
+      <th>Role</th>
+      <th>Name</th>
+      <th>Email</th>
+    </tr>
     </thead>
     <tbody>
     <jsp:useBean id="users" scope="request" type="java.util.List<com.javamentor.jmp_project.model.User>"/>
       <c:forEach var="user" items="${users}">
         <tr>
           <jsp:useBean id="user" type="com.javamentor.jmp_project.model.User"/>
-          <td><a href=<c:url value="/user?id=${user.id}" />><c:out value="${user.id}" /></a></td>
-          <td><a href=<c:url value="/user?login=${user.login}" />><c:out value="${user.login}" /></a></td>
+          <td><a href=<c:url value="/admin?id=${user.id}"/>><c:out value="${user.id}"/></a></td>
+          <td><a href=<c:url value="/admin?login=${user.login}"/>><c:out value="${user.login}"/></a></td>
           <td><c:out value="${user.password}" /></td>
+          <td><c:out value="${user.role}"/></td>
           <td><c:out value="${user.name}" /></td>
           <td><c:out value="${user.email}" /></td>
         </tr>

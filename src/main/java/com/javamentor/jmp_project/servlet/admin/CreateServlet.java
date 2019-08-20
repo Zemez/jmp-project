@@ -1,4 +1,4 @@
-package com.javamentor.jmp_project.servlet.user;
+package com.javamentor.jmp_project.servlet.admin;
 
 import com.javamentor.jmp_project.exception.AlreadyExistsException;
 import com.javamentor.jmp_project.exception.DaoException;
@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "UserCreate", urlPatterns = "/user/create")
+@WebServlet(name = "AdminCreate", urlPatterns = "/admin/create")
 public class CreateServlet extends HttpServlet {
 
     private UserService userService = UserServiceImpl.getInstance();
@@ -44,10 +44,10 @@ public class CreateServlet extends HttpServlet {
         try {
             user = userService.createUser(user);
             request.getSession().setAttribute("user", user);
-            request.getSession().setAttribute("note", new NoteMessage("User successful created."));
+            request.setAttribute("note", new NoteMessage("User successful created."));
             request.setAttribute("_user", user);
             response.setStatus(HttpServletResponse.SC_CREATED);
-            response.sendRedirect("/user");
+            getServletContext().getRequestDispatcher("/jsp/user.jsp").forward(request, response);
             return;
         } catch (InvalidArgumentException e) {
             request.getSession().setAttribute("error", new ErrorMessage(e.getMessage()));

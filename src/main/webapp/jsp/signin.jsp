@@ -13,10 +13,10 @@
 
 <h3>Sign In:</h3>
 
-<form action="j_security_check" method="post">
+<form action="<c:url value='/signin'/>" method="post">
   <%--@elvariable id="_login" type="java.lang.String"--%>
-  <p><label>Login: <input type="text" name="j_username" value="<c:out value='${_login}'/>"></label></p>
-  <p><label>Password: <input type="password" name="j_password"></label></p>
+  <p><label>Login: <input type="text" name="login" value="<c:out value='${_login}'/>"></label></p>
+  <p><label>Password: <input type="password" name="password"></label></p>
   <p><input type="submit" value="submit"></p>
 </form>
 

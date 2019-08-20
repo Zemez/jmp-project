@@ -12,11 +12,16 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "login", unique = true, nullable = false)
+    @Column(name = "login", unique = true, nullable = false, updatable = false)
     private String login;
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    //    @Enumerated(EnumType.STRING)
+//    @Column(columnDefinition="enum('admin','user')")
+    @Column(name = "role", nullable = false, columnDefinition = "default 'user'")
+    private String role;
 
     @Column(name = "name")
     private String name;
@@ -34,9 +39,15 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public User(Long id, String login, String password, String name, String email) {
+    public User(String login, String password, String role, String name, String email) {
+        this(login, password, name, email);
+        this.role = role;
+    }
+
+    public User(Long id, String login, String password, String role, String name, String email) {
         this(login, password, name, email);
         this.id = id;
+        this.role = role;
     }
 
     public Long getId() {
@@ -63,6 +74,14 @@ public class User implements Serializable {
         this.password = password;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     public String getName() {
         return name;
     }
@@ -85,6 +104,7 @@ public class User implements Serializable {
                 " id=" + id +
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 " }";

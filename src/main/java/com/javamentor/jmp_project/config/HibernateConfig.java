@@ -7,7 +7,6 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +29,7 @@ public class HibernateConfig {
         Properties properties = new Properties();
 
         try {
-            properties.load(Objects.requireNonNull(HibernateConfig.class.getClassLoader().getResourceAsStream("hibernate.properties")));
+            properties.load(HibernateConfig.class.getClassLoader().getResourceAsStream("hibernate.properties"));
         } catch (IOException e) {
             LOG.log(Level.CONFIG, "Hibernate properties load failed: " + e.getMessage());
             return null;

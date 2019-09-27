@@ -1,5 +1,7 @@
 package com.javamentor.jmp_project.dao;
 
+import com.javamentor.jmp_project.dao.handler.QueryResultSetHandler;
+import com.javamentor.jmp_project.dao.handler.UpdateResultSetHandler;
 import com.javamentor.jmp_project.exception.AlreadyExistsException;
 import com.javamentor.jmp_project.exception.DaoException;
 import com.javamentor.jmp_project.exception.InvalidArgumentException;
@@ -9,10 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
@@ -78,7 +77,7 @@ public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
         if (getUserBy("login", user.getLogin()) != null) throw new AlreadyExistsException("User already exists.");
 
         Long id = execPreparedUpdate("insert into users (login,password,role,name,email) values (?,?,?,?,?)",
-                List.of(user.getLogin(), user.getPassword(), user.getRole(), user.getName(), user.getEmail()),
+                Arrays.asList(user.getLogin(), user.getPassword(), user.getRole(), user.getName(), user.getEmail()),
                 (rows, keys) -> {
                     if (rows < 1) throw new DaoException("User add failed.");
                     if (rows > 1) throw new DaoException("Something going wrong: more than 1 rows created!");
@@ -107,7 +106,7 @@ public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
         // could be shot my leg
         for (Field field : User.class.getDeclaredFields()) {
             String fieldName = field.getName();
-            if (!List.of("id", "login").contains(fieldName)) {
+            if (!Arrays.asList("id", "login").contains(fieldName)) {
                 field.setAccessible(true);
                 try {
                     if (!field.get(userOld).equals(field.get(user))) {

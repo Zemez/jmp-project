@@ -17,7 +17,9 @@
   <%--@elvariable id="_login" type="java.lang.String"--%>
   <p><label>Login: <input type="text" name="login" value="<c:out value='${_login}'/>"></label></p>
   <p><label>Password: <input type="password" name="password"></label></p>
-  <p><input type="submit" value="submit"></p>
+  <p>
+    <button type="submit" value="submit">login</button>
+  </p>
 </form>
 
 </body>

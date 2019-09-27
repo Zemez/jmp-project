@@ -1,4 +1,4 @@
-package com.javamentor.jmp_project.dao;
+package com.javamentor.jmp_project.dao.handler;
 
 import com.javamentor.jmp_project.exception.DaoException;
 

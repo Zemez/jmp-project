@@ -49,7 +49,6 @@ public class UserDaoHibernateImpl implements UserDao {
 
     private List<User> getUsersBy(String field, Object value) throws DaoException, NotFoundException {
         try (Session session = sessionFactory.openSession()) {
-            //noinspection JpaQlInspection
             Query<User> query = session.createQuery("from User where " + field + "=:value", User.class);
             query.setParameter("value", value);
             return query.getResultList();
@@ -64,7 +63,6 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public List<User> getAllUsers() throws DaoException {
         try (Session session = sessionFactory.openSession()) {
-            //noinspection JpaQlInspection
             return session.createQuery("from User", User.class).list();
         } catch (HibernateException e) {
             LOG.warning("Users read failed: " + e.getMessage());

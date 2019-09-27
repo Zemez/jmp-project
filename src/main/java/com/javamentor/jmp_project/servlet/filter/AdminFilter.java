@@ -1,4 +1,4 @@
-package com.javamentor.jmp_project.servlet;
+package com.javamentor.jmp_project.servlet.filter;
 
 import com.javamentor.jmp_project.model.User;
 import com.javamentor.jmp_project.util.ErrorMessage;
@@ -8,13 +8,13 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
-@WebFilter(filterName = "UserFilter", urlPatterns = "/user/*")
-public class UserFilter implements Filter {
+@WebFilter(filterName = "AdminFilter", urlPatterns = "/admin/*")
+public class AdminFilter implements Filter {
 
-    private static final Logger LOG = Logger.getLogger(UserFilter.class.getName());
+    private static final Logger LOG = Logger.getLogger(AdminFilter.class.getName());
 
     @Override
     public void init(FilterConfig config) throws ServletException {
@@ -29,7 +29,7 @@ public class UserFilter implements Filter {
 
         LOG.info("User: " + user);
 
-        if (user != null && List.of("admin", "user").contains(user.getRole())) {
+        if (user != null && Objects.equals("admin", user.getRole())) {
 //            request.getSession().setAttribute("note", new NoteMessage("User successful authorized."));
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
             chain.doFilter(req, resp);

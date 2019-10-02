@@ -40,7 +40,7 @@ public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
     private User getUserBy(String field, Object value) throws DaoException {
         return execPreparedQuery("select * from users where " + field + "=? limit 1", Collections.singletonList(value),
                 rs -> {
-                    if (rs.first()) return new User(
+                    if (rs.next()) return new User(
                             rs.getLong("id"),
                             rs.getString("login"),
                             rs.getString("password"),
@@ -81,7 +81,7 @@ public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
                 (rows, keys) -> {
                     if (rows < 1) throw new DaoException("User add failed.");
                     if (rows > 1) throw new DaoException("Something going wrong: more than 1 rows created!");
-                    return keys.first() ? keys.getLong(1) : null;
+                    return keys.next() ? keys.getLong(1) : null;
                 });
 
         return getUser(id);
@@ -151,10 +151,12 @@ public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
             try (ResultSet resultSet = statement.executeQuery()) {
                 return handler.handle(resultSet);
             } catch (SQLException e) {
+                e.printStackTrace();
                 LOG.warning("User query result exception: " + e.getMessage());
                 throw new DaoException("User query result failed", e);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             LOG.warning("User query statement exception: " + e.getMessage());
             throw new DaoException("User query statement failed.", e);
         }
@@ -168,6 +170,7 @@ public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
             LOG.info("statement: " + statement);
             return statement.executeUpdate();
         } catch (SQLException e) {
+            e.printStackTrace();
             LOG.warning("User update statement exception: " + e.getMessage());
             throw new DaoException("User update statement failed.", e);
         }
@@ -183,10 +186,12 @@ public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 return handler.handle(rows, generatedKeys);
             } catch (SQLException e) {
+                e.printStackTrace();
                 LOG.warning("User update result exception: " + e.getMessage());
                 throw new DaoException("User update result failed", e);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             LOG.warning("User update statement exception: " + e.getMessage());
             throw new DaoException("User update statement failed.", e);
         }
@@ -196,4 +201,5 @@ public class UserDaoJdbcImpl implements UserDao, AutoCloseable {
     public void close() throws Exception {
         connection.close();
     }
+
 }

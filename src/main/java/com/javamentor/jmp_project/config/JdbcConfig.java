@@ -23,12 +23,12 @@ public class JdbcConfig {
         try {
             properties.load(Objects.requireNonNull(JdbcConfig.class.getClassLoader().getResourceAsStream("jdbc.properties")));
 
-            connUrl = properties.getProperty("jdbc.url");
-            connUser = properties.getProperty("jdbc.user");
-            connPass = properties.getProperty("jdbc.password");
+            connUrl = properties.getProperty("connection.url");
+            connUser = properties.getProperty("connection.user");
+            connPass = properties.getProperty("connection.password");
 
             try {
-                Class.forName(properties.getProperty("jdbc.driver"));
+                Class.forName(properties.getProperty("connection.driver"));
             } catch (ClassNotFoundException e) {
                 LOG.log(Level.CONFIG, "JDBC driver initialization failed: " + e.getMessage());
             }

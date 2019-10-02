@@ -9,7 +9,7 @@ public class User implements Serializable {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "login", unique = true, nullable = false, updatable = false)
@@ -20,7 +20,7 @@ public class User implements Serializable {
 
     //    @Enumerated(EnumType.STRING)
 //    @Column(columnDefinition="enum('admin','user')")
-    @Column(name = "role", nullable = false, columnDefinition = "default 'user'")
+    @Column(name = "role", nullable = false, columnDefinition = "varchar(31) default 'user'")
     private String role;
 
     @Column(name = "name")

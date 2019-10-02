@@ -74,13 +74,18 @@ public class UserDaoHibernateImpl implements UserDao {
     public User createUser(User user) throws DaoException, InvalidArgumentException, AlreadyExistsException {
         if (user == null) throw new InvalidArgumentException("Invalid null user.");
 
+        Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             if (user.getId() != null) user.setId(null);
+            transaction = session.beginTransaction();
             session.save(user);
+            transaction.commit();
             return user;
         } catch (ConstraintViolationException e) {
+            if (transaction != null) transaction.rollback();
             throw new AlreadyExistsException("User already exists.", e);
         } catch (HibernateException e) {
+            if (transaction != null) transaction.rollback();
             LOG.warning("User create failed: " + e.getMessage());
             throw new DaoException("User create failed.", e);
         }

@@ -1,4 +1,6 @@
-connection.driver=com.mysql.jdbc.Driver
-connection.url=jdbc:mysql://localhost:3306/example_db
-connection.user=example_user
-connection.password=example_pass
+#connection.driver=com.mysql.jdbc.Driver
+#connection.url=jdbc:mysql://localhost:3306/example_db
+connection.driver=org.postgresql.Driver
+connection.url=jdbc:postgresql:sample_db
+connection.user=sample_user
+connection.password=sample_pass

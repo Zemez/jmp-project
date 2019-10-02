@@ -29,9 +29,10 @@
 hs_err_pid*
 
 # IDEA files
-/.idea/
-/out/
-/target/
+.idea
+jmp-project.iml
+out
+target
 
 # Credentials
 jdbc.properties
